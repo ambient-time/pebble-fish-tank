@@ -1,7 +1,7 @@
 {
-  "archiveSHA256": "547cf847683106012fc2a16037843d16473b9b219c388deeb7b37d38b6fe468c",
-  "sourceArchive": "fish-tank-0.1.0-source.zip",
-  "independentPBWSHA256": "5a30b315a3937c312cd8f923c0ab26f2812ffa274e494623eb4a8a33283b3290",
+  "archiveSHA256": "e1e0626878c4f271835b328db1c55986923732a1750e5b57fd44c55be517f4a0",
+  "sourceArchive": "fish-tank-0.1.1-source.zip",
+  "independentPBWSHA256": "cc130b276f4b5b82151b7fd776a5dcf94359b72b89846195bd84dee6518fe783",
   "targets": [
     "basalt",
     "chalk",

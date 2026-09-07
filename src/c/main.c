@@ -1,7 +1,7 @@
 // Copyright 2026 Luke Steuber. MIT License.
 #include <pebble.h>
 #include "tank.h"
-static Window *s_window;static Layer *s_layer;static GFont s_font;
+static Window *s_window;static Layer *s_layer;
 static AppTimer *s_timer;static bool s_focused;static int s_burst;
 static int s_w,s_h,s_lw,s_lh,s_last_second=-1;static uint32_t s_frames;
 #ifdef PBL_ROUND
@@ -106,10 +106,6 @@ static void draw(Layer *layer,GContext *ctx){
     box(ctx,5,h-5,w-10,5,C(0x555555));stroke(ctx,6,12,6,h-9,C(0xaaaaaa));stroke(ctx,w-7,12,w-7,h-9,C(0xaaaaaa));
     box(ctx,10,33,1,22,C(0x55aaaa));box(ctx,12,34,1,10,C(0x55aaaa));
   }
-  int plaque_y=ROUND?12:9,plaque_w=ROUND?60:56;
-  box(ctx,(w-plaque_w)/2-2,plaque_y-1,plaque_w+4,18,C(0x555555));box(ctx,(w-plaque_w)/2,plaque_y,plaque_w,16,GColorBlack);
-  char text[6];tank_readout(text,t.tm_hour,t.tm_min,clock_is_24h_style());graphics_context_set_text_color(ctx,C(0xaaffff));
-  graphics_draw_text(ctx,text,s_font,GRect(0,Y(plaque_y-4),s_w,Y(23)),GTextOverflowModeWordWrap,GTextAlignmentCenter,NULL);
   s_frames++;
   if(s_last_second!=t.tm_sec){APP_LOG(APP_LOG_LEVEL_INFO,"Tank time=%02d:%02d:%02d fish=%d kelp=%d nuggets=%d frames=%lu heap=%lu",t.tm_hour,t.tm_min,t.tm_sec,parts.hour,parts.tens,parts.ones,(unsigned long)s_frames,(unsigned long)heap_bytes_free());s_last_second=t.tm_sec;}
   (void)layer;
@@ -120,9 +116,8 @@ static void tap(AccelAxisType axis,int32_t direction){cancel();if(s_focused){s_b
 static void tick(struct tm *t,TimeUnits units){if(s_focused&&!s_burst)layer_mark_dirty(s_layer);(void)t;(void)units;}
 static void focus(bool focused){s_focused=focused;if(focused)layer_mark_dirty(s_layer);else{cancel();s_burst=0;}}
 static void load(Window *window){GRect b=layer_get_bounds(window_get_root_layer(window));s_w=b.size.w;s_h=b.size.h;s_lw=ROUND?180:144;s_lh=ROUND?180:168;
-  s_font=fonts_load_custom_font(resource_get_handle(s_w>=200?RESOURCE_ID_TIME_24:s_w>=180?RESOURCE_ID_TIME_20:RESOURCE_ID_TIME_16));
   s_layer=layer_create(b);layer_set_update_proc(s_layer,draw);layer_add_child(window_get_root_layer(window),s_layer);}
-static void unload(Window *w){cancel();layer_destroy(s_layer);fonts_unload_custom_font(s_font);(void)w;}
+static void unload(Window *w){cancel();layer_destroy(s_layer);(void)w;}
 static void init(void){s_window=window_create();window_set_window_handlers(s_window,(WindowHandlers){.load=load,.unload=unload});window_stack_push(s_window,false);tick_timer_service_subscribe(SECOND_UNIT,tick);accel_tap_service_subscribe(tap);app_focus_service_subscribe(focus);focus(true);}
 static void deinit(void){s_focused=false;cancel();tick_timer_service_unsubscribe();accel_tap_service_unsubscribe();app_focus_service_unsubscribe();window_destroy(s_window);}
 int main(void){init();app_event_loop();deinit();}

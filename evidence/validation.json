@@ -1,7 +1,7 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "uuid": "084c5aae-6bab-44f8-90d4-6276dbebe487",
-  "pbwSHA256": "6fdcfc9ed549bf426e42a541070d48de53d2309b0b3509cfaa987463934902a4",
+  "pbwSHA256": "90c006e2a4e1ae91b1bc0d28cd6f2d36b54a18d997d4ddaa01633e9850f3962a",
   "targets": [
     "basalt",
     "chalk",

@@ -114,11 +114,20 @@ def run(platform,fresh=False,record=0):
         assert len(idle)==3 and all(1<=b-a<=2 for a,b in zip(idle,idle[1:])),'Idle did not settle near 1 Hz'
         start=len(logs)
         send_data_to_qemu(watch.transport,QemuTap(axis=QemuTap.Axis.X,direction=1))
-        time.sleep(3)
-        burst=counts(logs[start:])
+        # Wait for native samples, since emulator tap delivery can lag host time.
+        deadline=time.monotonic()+8
+        burst=[]
+        while time.monotonic()<deadline:
+            burst=counts(logs[start:])
+            if len(burst)>=3 and any(b-a>=4 for a,b in zip(burst,burst[1:])):break
+            time.sleep(.05)
         assert len(burst)>=2 and any(b-a>=4 for a,b in zip(burst,burst[1:])),'Tap did not animate'
-        time.sleep(9)
-        settled=counts(logs)[-3:]
+        deadline=time.monotonic()+18
+        settled=[]
+        while time.monotonic()<deadline:
+            settled=counts(logs)[-3:]
+            if len(settled)==3 and all(1<=b-a<=2 for a,b in zip(settled,settled[1:])):break
+            time.sleep(.05)
         assert len(settled)==3 and all(1<=b-a<=2 for a,b in zip(settled,settled[1:])),'Tap burst did not end'
         if record:
             grab('record-00',(11,24,30))

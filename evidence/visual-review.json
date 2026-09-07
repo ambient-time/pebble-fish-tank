@@ -1,22 +1,29 @@
 {
-  "pbwSHA256": "6fdcfc9ed549bf426e42a541070d48de53d2309b0b3509cfaa987463934902a4",
-  "reviewedAt": "2026-09-07T04:06:36.083028+00:00",
-  "method": "Direct inspection of native-resolution PNGs",
+  "reviewedAt": "2026-09-07T05:50:17.248265+00:00",
+  "version": "0.1.1",
+  "pbwSHA256": "90c006e2a4e1ae91b1bc0d28cd6f2d36b54a18d997d4ddaa01633e9850f3962a",
+  "status": "passed",
+  "method": "Direct inspection of native-resolution PNGs for all six target platforms.",
   "frames": [
     "evidence/basalt-hero.png",
-    "evidence/chalk-before-noon.png",
+    "evidence/chalk-hero.png",
     "evidence/diorite-before-noon.png",
     "evidence/emery-hero.png",
     "evidence/flint-hero.png",
-    "evidence/gabbro-hero.png",
-    "evidence/gabbro-before-midnight.png",
-    "evidence/chalk-noon.png"
+    "evidence/gabbro-noon.png"
   ],
+  "nativeScreenshots": {
+    "basalt-hero.png": "f8f9d42543ca2509ae234de85a84fea3221ceffef9c9450a95c58f258f9d8c10",
+    "chalk-hero.png": "a4d10e629eb6370d4db50612cbb3294ac2285efd8921362023109544ea7f3355",
+    "diorite-before-noon.png": "05f2e19fd3e42753f47f6d79e522b054ae6ad0ee77a61893894f2e0f3f7f01ac",
+    "emery-hero.png": "645eab37acebed6313a61a0ae492c3065f9cea5aee89835dc6f85066722f185a",
+    "flint-hero.png": "4bd5b096be4c03d3b031e05f3aca170e0722862c0df122a1bdfa824eee167530",
+    "gabbro-noon.png": "d724062260b0cb057171856ddc1ffeb2526ecd16c96856d3362f8b2bb4b272af"
+  },
   "findings": [
-    "The aquarium fills the rectangular screen and remains inside a complete circular frame on round screens.",
-    "The noon school shows twelve visible fish. Fish remain distinct from the lamp and gravel.",
-    "Five kelp strands and nine bordered nuggets remain separate at 11:59, including monochrome.",
-    "Time lamp is readable without clipping on all six target layouts."
+    "The digital clock and its plaque are absent on rectangular and round screens.",
+    "The original fish, kelp, castle, bubbles, gravel and glass-frame composition is preserved.",
+    "The noon school and minute-counting plants and nuggets remain visible in color and monochrome."
   ],
-  "limits": "Representative native frames. Physical wrist motion, sunlight readability and battery use remain unmeasured."
+  "limits": "Emulator visual review. Physical-watch readability and battery use remain unmeasured."
 }

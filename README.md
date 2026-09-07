@@ -1,6 +1,6 @@
-# Fish Tank
+# Fish Count
 
-![Fish Tank on a color Pebble](evidence/basalt-hero.png)
+![Fish Count on a color Pebble](evidence/basalt-hero.png)
 
 A little aquarium on your wrist. Fish cruise through open water above a stone
 castle, moving kelp, and a gravel bed. The tank fills a rectangular screen;
@@ -9,8 +9,7 @@ round watches get a circular aquarium window.
 Count the fish for the local hour, from one to twelve. Warm fish mark AM and
 cool fish mark PM on color watches. Tall kelp clumps count minute tens, and the
 bright nuggets along the gravel count minute ones. Bubbles rise with the
-seconds. The light above the water also shows the exact time in your watch's
-12- or 24-hour format.
+seconds.
 
 Tap the watch for six seconds of smoother motion at eight frames per second.
 The tank normally updates once per second and pauses animation when another
@@ -31,7 +30,7 @@ pebble install --emulator basalt build/fish-tank.pbw
 ```
 
 The host tests need Clang. They check every second of a day, midnight/noon
-encodings, 12/24-hour readouts, and fish positions across all school sizes.
+encodings, and fish positions across all school sizes.
 `test/emulator.py` uses the Python environment installed with `pebble-tool` to
 capture native screens, check natural rollovers, and measure the tap cadence.
 
@@ -51,10 +50,7 @@ and this native adaptation. Both use the MIT license. The supplied HTML and
 its checksum remain in `reference/`.
 
 The native composition retains the local fish, kelp, nugget, and bubble time
-mappings. It adds a readable lamp display, keeps every fish within the tank,
-and adjusts the composition for each screen shape. The water's daylight tint
+mappings. It keeps every fish within the tank and adjusts the composition
+for each screen shape. The water's daylight tint
 uses fixed local hours, 07:00 through 18:59. This offline edition does not fetch
 weather or calculate the source's location-based solar lighting.
-
-Barlow Condensed Bold supplies the lamp numerals under the SIL Open Font
-License in `resources/fonts/OFL.txt`.

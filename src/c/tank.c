@@ -18,8 +18,3 @@ TankFish tank_fish(int index,int count,int width,int height,bool round,uint32_t 
   int bob=((eighths/6+index*19)%8);if(bob>4)bob=8-bob;
   return (TankFish){x,y+bob-2,p<travel?1:-1,index%3};
 }
-void tank_readout(char out[6],int hour,int minute,bool twenty_four){
-  hour=mod(hour,24);minute=mod(minute,60);if(!twenty_four)hour=hour%12?hour%12:12;
-  out[0]=hour<10&&!twenty_four?' ':'0'+hour/10;out[1]='0'+hour%10;
-  out[2]=':';out[3]='0'+minute/10;out[4]='0'+minute%10;out[5]=0;
-}

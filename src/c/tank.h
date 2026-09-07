@@ -6,5 +6,4 @@ typedef struct { int hour, tens, ones, bubbles; bool pm, daylight; } TankTime;
 typedef struct { int x,y,direction,kind; } TankFish;
 TankTime tank_time(int hour,int minute,int second);
 TankFish tank_fish(int index,int count,int width,int height,bool round,uint32_t eighths);
-void tank_readout(char out[6],int hour,int minute,bool twenty_four);
 uint32_t tank_hash(uint32_t value);

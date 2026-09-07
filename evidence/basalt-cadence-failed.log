@@ -1,0 +1,37 @@
+Tank time=22:43:35 fish=10 kelp=4 nuggets=3 frames=1 heap=60588
+Tank time=22:43:36 fish=10 kelp=4 nuggets=3 frames=3 heap=60668
+Tank time=22:43:37 fish=10 kelp=4 nuggets=3 frames=4 heap=60668
+Tank time=10:08:00 fish=10 kelp=0 nuggets=8 frames=5 heap=60668
+Tank time=10:08:01 fish=10 kelp=0 nuggets=8 frames=6 heap=60668
+Tank time=10:08:02 fish=10 kelp=0 nuggets=8 frames=7 heap=60668
+Tank time=12:00:00 fish=12 kelp=0 nuggets=0 frames=8 heap=60668
+Tank time=03:15:45 fish=3 kelp=1 nuggets=5 frames=9 heap=60668
+Tank time=18:30:30 fish=6 kelp=3 nuggets=0 frames=10 heap=60668
+Tank time=11:59:58 fish=11 kelp=5 nuggets=9 frames=11 heap=60668
+Tank time=11:59:59 fish=11 kelp=5 nuggets=9 frames=12 heap=60668
+Tank time=12:00:00 fish=12 kelp=0 nuggets=0 frames=13 heap=60668
+Tank time=23:59:58 fish=11 kelp=5 nuggets=9 frames=14 heap=60668
+Tank time=23:59:59 fish=11 kelp=5 nuggets=9 frames=15 heap=60668
+Tank time=00:00:00 fish=12 kelp=0 nuggets=0 frames=16 heap=60668
+Tank time=11:24:30 fish=11 kelp=2 nuggets=4 frames=17 heap=60668
+Tank time=11:24:31 fish=11 kelp=2 nuggets=4 frames=18 heap=60668
+Tank time=11:24:32 fish=11 kelp=2 nuggets=4 frames=19 heap=60668
+Tank time=11:24:33 fish=11 kelp=2 nuggets=4 frames=20 heap=60668
+Tank time=11:24:34 fish=11 kelp=2 nuggets=4 frames=21 heap=60668
+Tank time=11:24:35 fish=11 kelp=2 nuggets=4 frames=22 heap=60668
+Tank time=11:24:36 fish=11 kelp=2 nuggets=4 frames=23 heap=60668
+Tank time=11:24:37 fish=11 kelp=2 nuggets=4 frames=24 heap=60668
+Tank time=11:24:38 fish=11 kelp=2 nuggets=4 frames=25 heap=60668
+Tank time=11:24:39 fish=11 kelp=2 nuggets=4 frames=26 heap=60668
+Tank time=11:24:40 fish=11 kelp=2 nuggets=4 frames=27 heap=60668
+Tank time=11:24:41 fish=11 kelp=2 nuggets=4 frames=29 heap=60668
+Tank time=11:24:42 fish=11 kelp=2 nuggets=4 frames=37 heap=60668
+Tank time=11:24:43 fish=11 kelp=2 nuggets=4 frames=45 heap=60668
+Traceback (most recent call last):
+  File "/Users/luke/workspace/ambient-time-watch-arc-capsule/appstores/pebble/fish-tank/test/emulator.py", line 155, in <module>
+    run(args.platform,args.fresh,args.record)
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/luke/workspace/ambient-time-watch-arc-capsule/appstores/pebble/fish-tank/test/emulator.py", line 127, in run
+    assert len(settled)==3 and all(1<=b-a<=2 for a,b in zip(settled,settled[1:])),'Tap burst did not end'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tap burst did not end
