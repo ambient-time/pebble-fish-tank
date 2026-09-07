@@ -1,0 +1,646 @@
+<!doctype html>
+<!--
+  Quick Take: A glowing pixel-art aquarium screensaver clock: fish count the hour, plants and gravel mark the minutes.
+  Stack: Self-contained; no external libraries.
+  Source: https://datapoems.io/clocks/fish-tank-screensaver/
+  License: MIT
+  Author: Luke Steuber
+-->
+<html class="collection-export embed" lang="en">
+<head>
+<script>window.CLOCK_COLLECTION_EXPORT=true;</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#02080d">
+<title>Fish Tank Screensaver</title>
+<meta name="description" content="A glowing pixel-art aquarium screensaver clock: fish count the hour, plants and gravel mark the minutes, bubbles rise with the seconds. Sky and water follow local sun and weather.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#010507;color:#b8fff4}
+body{font-family:"Source Sans 3",system-ui,sans-serif}canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+.help{position:fixed;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));z-index:5;width:44px;height:44px;display:grid;place-items:center;color:#8deade;text-decoration:none;font:700 18px/1 "Source Sans 3",system-ui,sans-serif;opacity:.42}.help:hover,.help:focus-visible{opacity:1}.help:focus-visible{outline:2px solid currentColor;outline-offset:2px}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}body.embed .help{display:none}
+</style>
+<style data-collection-chrome>
+.dev-controls,
+.study-controls,
+.help,
+.back,
+.about-backdrop,
+.about-modal,
+.about-card,
+.gate-controls,
+a[aria-label*='about' i],
+button[aria-label*='about' i],
+a[aria-label*='help' i],
+button[aria-label*='help' i],
+a[aria-label*='all clocks' i],
+button[aria-label*='all clocks' i],
+a[aria-label*='clock gallery' i],
+button[aria-label*='clock gallery' i]{display:none!important}
+</style>
+</head>
+<body class="collection-export embed">
+<canvas id="tank" role="img" aria-label="Fish Tank screensaver clock. Count the fish for the hour, tall kelp and gold nuggets for minutes, and rising bubbles for seconds. Sky and water follow local daylight and weather."></canvas>
+<a class="help" href="#about" aria-label="About Fish Tank Screensaver">?</a><div class="sr" id="sr" aria-live="polite"></div>
+<script>
+/* Astro: pure astronomical calculations from (date, lat, lon). The web twin of
+ * ClocksCore/Astro.swift — keep them identical (see ASTRO_CONSTANTS.md).
+ * Longitude east-positive; angles in degrees; all math in UTC. sunrise/sunset
+ * return null at high latitude on polar day/night.
+ *
+ * Attaches a global `Astro`. Load with:
+ *   <script src="/clocks/shared/astro.js"><\/script>
+ */
+(function (root) {
+  'use strict';
+
+  var REFRACTION_ELEVATION = -0.833;     // sun-center elevation at sunrise/sunset
+  var SYNODIC_MONTH = 29.530588853;      // mean lunation (days)
+  var NEW_MOON_JD = 2451550.1;           // 2000-01-06 18:14 UTC, year-agnostic
+  var JD_UNIX_EPOCH = 2440587.5;
+  var DEG = Math.PI / 180;
+
+  function julianDay(date) {
+    return date.getTime() / 86400000 + JD_UNIX_EPOCH;
+  }
+
+  // declination (deg), equation of time (min), apparent longitude lambda (0..360)
+  function solarTerms(date) {
+    var jd = julianDay(date);
+    var T = (jd - 2451545) / 36525;
+    var L0 = (280.46646 + T * (36000.76983 + T * 0.0003032)) % 360;
+    if (L0 < 0) L0 += 360;
+    var M = 357.52911 + T * (35999.05029 - 0.0001537 * T);
+    var e = 0.016708634 - T * (0.000042037 + 0.0000001267 * T);
+    var mr = M * DEG;
+    var C = Math.sin(mr) * (1.914602 - T * (0.004817 + 0.000014 * T)) +
+      Math.sin(2 * mr) * (0.019993 - 0.000101 * T) + Math.sin(3 * mr) * 0.000289;
+    var trueLong = L0 + C;
+    var omega = 125.04 - 1934.136 * T;
+    var lambda = trueLong - 0.00569 - 0.00478 * Math.sin(omega * DEG);
+    var secondsOb = 21.448 - T * (46.815 + T * (0.00059 - T * 0.001813));
+    var obliq = (23 + (26 + secondsOb / 60) / 60 + 0.00256 * Math.cos(omega * DEG)) * DEG;
+    var decl = Math.asin(Math.sin(obliq) * Math.sin(lambda * DEG)) / DEG;
+    var y = Math.tan(obliq / 2); y *= y;
+    var L0r = L0 * DEG;
+    var eq = 4 / DEG * (y * Math.sin(2 * L0r) - 2 * e * Math.sin(mr) +
+      4 * e * y * Math.sin(mr) * Math.cos(2 * L0r) -
+      0.5 * y * y * Math.sin(4 * L0r) - 1.25 * e * e * Math.sin(2 * mr));
+    var lambdaNorm = ((lambda % 360) + 360) % 360;
+    return { declination: decl, equationOfTime: eq, longitude: lambdaNorm };
+  }
+
+  function solarElevation(date, lat, lon) {
+    var t = solarTerms(date);
+    var declR = t.declination * DEG;
+    var utcMinutes = date.getUTCHours() * 60 + date.getUTCMinutes() + date.getUTCSeconds() / 60;
+    var trueSolar = (((utcMinutes + t.equationOfTime + 4 * lon) % 1440) + 1440) % 1440;
+    var hourAngle = (trueSolar / 4 - 180) * DEG;
+    var phi = lat * DEG;
+    return Math.asin(Math.sin(phi) * Math.sin(declR) +
+      Math.cos(phi) * Math.cos(declR) * Math.cos(hourAngle)) / DEG;
+  }
+
+  function utcDayStart(date) {
+    return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  }
+
+  function sunEvent(date, lat, lon, rising) {
+    var dayStart = utcDayStart(date);
+    var noon = new Date(dayStart + 12 * 3600000);
+    var t = solarTerms(noon);
+    var declR = t.declination * DEG;
+    var phi = lat * DEG;
+    var cosH = (Math.sin(REFRACTION_ELEVATION * DEG) - Math.sin(phi) * Math.sin(declR)) /
+      (Math.cos(phi) * Math.cos(declR));
+    if (cosH > 1 || cosH < -1) return null;            // polar day / night
+    var hDeg = Math.acos(cosH) / DEG;
+    var noonMinutes = 720 - 4 * lon - t.equationOfTime;
+    var eventMinutes = rising ? noonMinutes - 4 * hDeg : noonMinutes + 4 * hDeg;
+    return new Date(dayStart + eventMinutes * 60000);
+  }
+
+  function sunrise(date, lat, lon) { return sunEvent(date, lat, lon, true); }
+  function sunset(date, lat, lon) { return sunEvent(date, lat, lon, false); }
+
+  function daylightLength(date, lat, lon) {
+    var r = sunrise(date, lat, lon), s = sunset(date, lat, lon);
+    if (!r || !s) return null;
+    return (s.getTime() - r.getTime()) / 1000;          // seconds
+  }
+
+  function moonPhase(date) {
+    var p = ((julianDay(date) - NEW_MOON_JD) % SYNODIC_MONTH) / SYNODIC_MONTH;
+    if (p < 0) p += 1;
+    return p;
+  }
+  function moonAgeDays(date) { return moonPhase(date) * SYNODIC_MONTH; }
+  function moonIllumination(date) { return (1 - Math.cos(2 * Math.PI * moonPhase(date))) / 2; }
+  function moonPhaseName(date) {
+    var p = moonPhase(date);
+    if (p < 0.0625 || p >= 0.9375) return 'New Moon';
+    if (p < 0.1875) return 'Waxing Crescent';
+    if (p < 0.3125) return 'First Quarter';
+    if (p < 0.4375) return 'Waxing Gibbous';
+    if (p < 0.5625) return 'Full Moon';
+    if (p < 0.6875) return 'Waning Gibbous';
+    if (p < 0.8125) return 'Last Quarter';
+    return 'Waning Crescent';
+  }
+
+  var ZODIAC = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+    'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+
+  function season(date, northern) {
+    if (northern === undefined) northern = true;
+    var l = solarTerms(date).longitude;
+    var north = l < 90 ? 'spring' : l < 180 ? 'summer' : l < 270 ? 'autumn' : 'winter';
+    if (northern) return north;
+    return { spring: 'autumn', summer: 'winter', autumn: 'spring', winter: 'summer' }[north];
+  }
+
+  function zodiac(date) {
+    var idx = Math.floor(solarTerms(date).longitude / 30) % 12;
+    return ZODIAC[(idx + 12) % 12];
+  }
+
+  root.Astro = {
+    REFRACTION_ELEVATION: REFRACTION_ELEVATION,
+    SYNODIC_MONTH: SYNODIC_MONTH,
+    NEW_MOON_JD: NEW_MOON_JD,
+    julianDay: julianDay,
+    solarTerms: solarTerms,
+    solarElevation: solarElevation,
+    sunrise: sunrise,
+    sunset: sunset,
+    daylightLength: daylightLength,
+    moonPhase: moonPhase,
+    moonAgeDays: moonAgeDays,
+    moonIllumination: moonIllumination,
+    moonPhaseName: moonPhaseName,
+    season: season,
+    zodiac: zodiac,
+    ZODIAC: ZODIAC
+  };
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+/* FetchCache: tiny dependency-free helpers for the Ephemeris clocks (weather,
+ * astro, tide). Extracts the versioned-localStorage cache, geolocation, and
+ * timed-fetch patterns that were inlined in tide/index.html and cosmic/.
+ *
+ * Attaches a global `FetchCache`. Load with:
+ *   <script src="/clocks/shared/fetch-cache.js"><\/script>
+ *
+ * Everything is fail-safe: a thrown/blocked localStorage, a denied geolocation,
+ * or a network error never rejects the way that would blank a clock. Callers
+ * still get a usable value (cached, default, or null) and decide how to render.
+ */
+(function (root) {
+  'use strict';
+
+  // Bump this to invalidate every cached entry at once (schema/format change).
+  var VERSION = 'v1';
+
+  // Hard fallback when geolocation is unavailable or denied. Picked so a clock
+  // always has *some* honest place to show rather than NaN.
+  var DEFAULT_LOCATION = { lat: 40.7128, lon: -74.0060, label: 'New York', source: 'default' };
+
+  // Manual override: set localStorage['clocks.location'] to a JSON object like
+  //   {"lat":51.5,"lon":-0.12,"label":"London"}
+  // and every Ephemeris clock will use it instead of asking the browser.
+  var OVERRIDE_KEY = 'clocks.location';
+  var DEVICE_LOCATION_KEY = 'location.device';
+  var DEVICE_LOCATION_TTL = 6 * 60 * 60 * 1000;
+
+  function vkey(key) { return 'clocks.fc.' + VERSION + '.' + key; }
+
+  // cacheGet(key, ttlMs) -> stored value, or null if missing/expired/unreadable.
+  function cacheGet(key, ttlMs) {
+    try {
+      var raw = localStorage.getItem(vkey(key));
+      if (!raw) return null;
+      var rec = JSON.parse(raw);
+      if (!rec || typeof rec.time !== 'number') return null;
+      if (ttlMs != null && Date.now() - rec.time > ttlMs) return null;
+      return rec.data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // cacheSet(key, value) -> true on success, false if storage is unavailable.
+  function cacheSet(key, value) {
+    try {
+      localStorage.setItem(vkey(key), JSON.stringify({ time: Date.now(), data: value }));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // cacheAge(key) -> ms since the entry was written, or null if absent.
+  function cacheAge(key) {
+    try {
+      var rec = JSON.parse(localStorage.getItem(vkey(key)) || 'null');
+      return rec && typeof rec.time === 'number' ? Date.now() - rec.time : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function normalizeLocation(o, fallbackLabel, source) {
+    if (!o || !isFinite(o.lat) || !isFinite(o.lon)) return null;
+    var lat = +o.lat, lon = +o.lon;
+    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+    var loc = { lat: lat, lon: lon, label: o.label || fallbackLabel, source: source };
+    if (isFinite(o.accuracy)) loc.accuracy = +o.accuracy;
+    if (o.cached) loc.cached = true;
+    return loc;
+  }
+
+  function readOverride() {
+    try {
+      var raw = localStorage.getItem(OVERRIDE_KEY);
+      if (!raw) return null;
+      return normalizeLocation(JSON.parse(raw), 'Manual', 'manual');
+    } catch (e) {}
+    return null;
+  }
+
+  function readDeviceCache(ttlMs) {
+    var cached = cacheGet(DEVICE_LOCATION_KEY, ttlMs);
+    if (!cached) return null;
+    cached.cached = true;
+    return normalizeLocation(cached, 'Your location', 'device');
+  }
+
+  function writeDeviceCache(loc) {
+    cacheSet(DEVICE_LOCATION_KEY, {
+      lat: loc.lat, lon: loc.lon, label: loc.label,
+      accuracy: loc.accuracy
+    });
+  }
+
+  // locate() -> Promise<{lat, lon, label, source}>. Never rejects.
+  // Resolution order: manual override > browser geolocation > cached browser
+  // geolocation > hard default.
+  // `source` is one of 'manual' | 'device' | 'default'.
+  function locate(opts) {
+    opts = opts || {};
+    var override = readOverride();
+    if (override) return Promise.resolve(override);
+    var cachedDevice = readDeviceCache(opts.cacheTtlMs || DEVICE_LOCATION_TTL);
+
+    return new Promise(function (resolve) {
+      if (!navigator.geolocation) return resolve(cachedDevice || clone(DEFAULT_LOCATION));
+      var done = false;
+      function fallback() { if (!done) { done = true; resolve(cachedDevice || clone(DEFAULT_LOCATION)); } }
+      navigator.geolocation.getCurrentPosition(
+        function (p) {
+          if (done) return;
+          done = true;
+          var loc = {
+            lat: p.coords.latitude, lon: p.coords.longitude,
+            label: 'Your location', source: 'device',
+            accuracy: p.coords.accuracy
+          };
+          writeDeviceCache(loc);
+          resolve(loc);
+        },
+        fallback,
+        {
+          enableHighAccuracy: false,
+          timeout: opts.timeoutMs || 7000,
+          maximumAge: opts.maximumAge != null ? opts.maximumAge : 3600000
+        }
+      );
+    });
+  }
+
+  function clone(o) {
+    var c = { lat: o.lat, lon: o.lon, label: o.label, source: o.source };
+    if (isFinite(o.accuracy)) c.accuracy = +o.accuracy;
+    if (o.cached) c.cached = true;
+    return c;
+  }
+
+  // fetchJSON(url, {timeoutMs}) -> Promise<json>. Aborts after ~10s by default
+  // and rejects on non-2xx so callers can fall back to cache.
+  function fetchJSON(url, opts) {
+    opts = opts || {};
+    var timeoutMs = opts.timeoutMs || 10000;
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeoutMs) : null;
+    var init = { signal: ctrl ? ctrl.signal : undefined };
+    return fetch(url, init).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).finally(function () { if (timer) clearTimeout(timer); });
+  }
+
+  root.FetchCache = {
+    VERSION: VERSION,
+    DEFAULT_LOCATION: DEFAULT_LOCATION,
+    OVERRIDE_KEY: OVERRIDE_KEY,
+    DEVICE_LOCATION_KEY: DEVICE_LOCATION_KEY,
+    cacheGet: cacheGet,
+    cacheSet: cacheSet,
+    cacheAge: cacheAge,
+    locate: locate,
+    fetchJSON: fetchJSON
+  };
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+(()=>{'use strict';
+const canvas=document.querySelector('#tank'),ctx=canvas.getContext('2d'),sr=document.querySelector('#sr');
+const params=new URLSearchParams(location.search),card=params.get('card')==='1',fixed=params.has('time')?((+params.get('time')%1440)+1440)%1440:null;
+document.body.classList.toggle('embed',params.get('embed')==='1'||card);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+let W=400,H=250,dpr=1,lastMinute=-1,lastHourKey='',fish=[];
+const warm=[['#ffb34d','#ffe28a','#913d36'],['#eb6f92','#ffc2b5','#743054'],['#8ed85b','#e5f49b','#3c733e']];
+const cool=[['#72e5dd','#c8fff5','#176781'],['#b39cff','#e7dbff','#503a83'],['#5eb8ff','#c5e7ff','#1f4f78']];
+
+/** Fail-soft place + weather; lighting works from solar elevation alone until weather arrives. */
+const place={
+  loc:null,
+  weather:null, // {code, cloud, precip} | null
+  status:'pending' // pending | ready | nowx
+};
+const WX_CACHE_PREFIX='fishtank.openmeteo.';
+const WX_TTL=30*60000;
+// Optional ?lat=&lon= for shareable solar tests (does not replace FetchCache override key).
+const qLat=+params.get('lat'), qLon=+params.get('lon');
+const queryLoc=(isFinite(qLat)&&isFinite(qLon)&&qLat>=-90&&qLat<=90&&qLon>=-180&&qLon<=180)
+  ?{lat:qLat,lon:qLon,label:'Query',source:'query'}:null;
+
+function hash(n){return((Math.sin(n*78.233)*43758.5453)%1+1)%1}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function lerp(a,b,t){return a+(b-a)*t}
+function mixHex(a,b,t){
+  const p=n=>{const x=parseInt(n.slice(1),16);return[(x>>16)&255,(x>>8)&255,x&255]};
+  const A=p(a),B=p(b),u=clamp(t,0,1);
+  return'#'+[0,1,2].map(i=>Math.round(lerp(A[i],B[i],u)).toString(16).padStart(2,'0')).join('');
+}
+function resize(){const ratio=innerWidth/innerHeight;W=Math.max(140,Math.round(250*ratio));H=250;dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false}
+function time(){if(card)return new Date(2026,6,21,10,28,42,500);if(fixed!==null){const d=new Date(2026,0,1,Math.floor(fixed/60),fixed%60,30);return d}return new Date}
+function hourParts(d){const h24=d.getHours(),h12=h24%12||12;return{h24,h12,pm:h24>=12}}
+/**
+ * Instant fed to Astro. Live clock uses the real Date (correct UTC instant).
+ * ?time= / ?card=1 rebuild from wall-clock minutes at the resolved lon so solar
+ * altitude matches that civil hour even when the host TZ is UTC.
+ */
+function solarInstant(d){
+  if(fixed===null&&!card)return d;
+  const loc=resolveLoc();
+  const mins=card?10*60+28:fixed;
+  const utcMins=((mins-loc.lon*4)%1440+1440)%1440;
+  const uh=Math.floor(utcMins/60),um=utcMins-uh*60;
+  return new Date(Date.UTC(2026,5,21,uh,Math.floor(um),card?42:30,card?500:0));
+}
+
+function wxUrl(loc){
+  return'https://api.open-meteo.com/v1/forecast?latitude='+loc.lat.toFixed(4)+
+    '&longitude='+loc.lon.toFixed(4)+
+    '&current=weather_code,cloud_cover,precipitation'+
+    '&timezone=auto';
+}
+function normalizeWx(j){
+  if(!j||!j.current)return null;
+  const c=j.current;
+  return{
+    code:c.weather_code!=null?+c.weather_code:0,
+    cloud:c.cloud_cover!=null?clamp(+c.cloud_cover,0,100):0,
+    precip:c.precipitation!=null?Math.max(0,+c.precipitation):0
+  };
+}
+function resolveLoc(){
+  return place.loc||queryLoc||(typeof FetchCache!=='undefined'?FetchCache.DEFAULT_LOCATION:{lat:40.7128,lon:-74.0060});
+}
+function loadPlace(){
+  if(queryLoc){place.loc=queryLoc}
+  if(typeof FetchCache==='undefined'){place.status='nowx';return}
+  const locate=queryLoc?Promise.resolve(queryLoc):FetchCache.locate({timeoutMs:6000});
+  locate.then(loc=>{
+    place.loc=loc;
+    const key=WX_CACHE_PREFIX+loc.lat.toFixed(2)+'.'+loc.lon.toFixed(2);
+    const fresh=FetchCache.cacheGet(key,WX_TTL);
+    if(fresh){place.weather=fresh;place.status='ready';return}
+    return FetchCache.fetchJSON(wxUrl(loc),{timeoutMs:10000}).then(j=>{
+      const n=normalizeWx(j);
+      if(!n)throw new Error('empty');
+      FetchCache.cacheSet(key,n);
+      place.weather=n;place.status='ready';
+    }).catch(()=>{
+      const any=FetchCache.cacheGet(key,Infinity);
+      if(any){place.weather=any;place.status='ready'}
+      else{place.weather=null;place.status='nowx'}
+    });
+  }).catch(()=>{place.status='nowx'});
+}
+
+/**
+ * Local solar scene from lat/lon + clock time.
+ * Day/night uses Astro.solarElevation (not clock AM/PM). Fish palette still encodes AM/PM.
+ */
+function solarScene(d){
+  const loc=resolveLoc();
+  let elev=0;
+  if(typeof Astro!=='undefined'&&Astro.solarElevation){
+    elev=Astro.solarElevation(solarInstant(d),loc.lat,loc.lon);
+  }else{
+    // Crude fallback only if shared/astro.js failed to load: rough solar curve.
+    const m=d.getHours()*60+d.getMinutes();
+    elev=35*Math.sin((m-360)/1440*Math.PI*2);
+  }
+  // dayFactor 1 = bright midday, 0 = deep night. Starts falling while the sun is
+  // still up so late afternoon already cools the water (no “noon tank” at 8PM).
+  const dayFactor=clamp((elev+4)/42,0,1);
+  const sunUp=elev>=-0.833; // apparent sunrise/set (Astro.REFRACTION_ELEVATION)
+  const twilight=elev>=-6&&elev<8;
+  const lowSun=sunUp&&elev<14; // late/early sun sits low; golden tint
+  // Higher solar altitude → higher on the glass; near-horizon sun drops toward the surface.
+  const skyY=lerp(56,26,clamp((elev+2)/58,0,1));
+  return{elev,dayFactor,sunUp,twilight,lowSun,skyY,lat:loc.lat,lon:loc.lon};
+}
+
+function weatherMods(){
+  const w=place.weather;
+  if(!w)return{cloud:0,rain:0,dim:0,grey:0};
+  const code=w.code|0;
+  const raining=code>=51&&code<=67||code>=80&&code<=82||code>=95||w.precip>0.1;
+  const snowing=code>=71&&code<=77;
+  const foggy=code>=45&&code<=48;
+  const cloud=clamp(w.cloud/100,0,1);
+  const rain=raining?clamp(0.35+w.precip*0.4,0,1):(snowing?0.25:0);
+  const dim=clamp(cloud*0.45+rain*0.35+(foggy?0.25:0),0,0.75);
+  const grey=clamp(cloud*0.7+(foggy?0.4:0),0,1);
+  return{cloud,rain,dim,grey,snowing,foggy};
+}
+
+function initFish(count,pm){const pals=pm?cool:warm;fish=Array.from({length:count},(_,i)=>({x:hash(i+2+count)*.85*W+W*.08,y:52+hash(i+20+count)*118,s:.55+hash(i+40)*.7,dir:hash(i+60+count)>.5?1:-1,size:i<Math.min(3,count)?2:1,c:i%pals.length,phase:hash(i+80)*20,kind:i%4,pal:pals[i%pals.length]}))}
+function px(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
+function fishShape(x,y,dir,size,pal,phase,kind){ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(dir*size,size);const [body,light,dark]=pal;const flap=Math.sin(phase)>0?1:0;
+  if(kind===3){px(-10,-5,16,10,body);px(-6,-7,8,2,light);px(6,-3,5,6,dark);px(-14,-5,4,4,dark);px(-16,-3,4,6,body);px(-14,1,4,4,dark)}
+  else{px(-9,-5,15,10,body);px(-5,-7,7,2,light);px(-5,5,7,2,dark);px(6,-3,4,6,light);px(-13,-5,4,4,dark);px(-15,-2,6,4,body);px(-13,2,4,4,dark);if(kind===1){px(-3,-10,3,5,body);px(-2,7,3,4,dark)}if(kind===2){px(-8,-1,12,2,dark)}}
+  px(4,-2,2,2,'#06151a');px(5,-2,1,1,'#fff');px(-14-flap,-1,2,2,light);ctx.restore()}
+function plant(x,base,t,seed,tall){const sway=reduce.matches?0:Math.sin(t*.001+seed)*2;const stalks=tall?5:3;ctx.strokeStyle=seed%2?'#27a36b':'#4fbd69';ctx.lineWidth=2;for(let i=0;i<stalks;i++){const h=(tall?26:14)+hash(seed*7+i)*(tall?36:18);ctx.beginPath();ctx.moveTo(x+i*3-4,base);ctx.quadraticCurveTo(x-5+sway*(i%2?1:-1),base-h*.55,x+sway,base-h);ctx.stroke();for(let j=1;j<4;j++){const yy=base-h*j/4,side=(j+i)%2?1:-1;px(x+sway*j/4+side*2,yy,4*side,2,side>0?'#5bd66e':'#258f61')}}}
+function castle(cx,base){px(cx-24,base-31,48,31,'#293b3e');px(cx-20,base-35,10,5,'#415559');px(cx+10,base-35,10,5,'#415559');px(cx-5,base-45,10,15,'#33494d');px(cx-8,base-48,4,5,'#52666a');px(cx+4,base-48,4,5,'#52666a');px(cx-4,base-16,9,16,'#07151a');for(let i=0;i<5;i++)px(cx-21+i*10,base-27+(i%2)*7,4,5,'#101f23')}
+function bubble(x,y,r,a){ctx.globalAlpha=a;ctx.strokeStyle='#a7fff1';ctx.lineWidth=1;ctx.strokeRect(Math.round(x-r),Math.round(y-r),Math.max(2,r*2),Math.max(2,r*2));px(x-r+1,y-r+1,1,1,'#efffff');ctx.globalAlpha=1}
+
+function dayBadge(cx,cy,scene,wx){
+  const muted=wx.cloud>0.55||wx.foggy;
+  if(scene.sunUp){
+    // Low sun: ember disk, short rays. Midday: bright with full rays.
+    let core=scene.lowSun?'#e8893a':'#f5c14a';
+    let glow=scene.lowSun?'#ffb060':'#ffe28a';
+    let ray=scene.lowSun?'#d96528':'#f5b441';
+    if(muted){core=mixHex(core,'#c4b08a',wx.grey);glow=mixHex(glow,'#d8d0b8',wx.grey);ray=mixHex(ray,'#a89a78',wx.grey)}
+    const r=scene.lowSun?8:10;
+    px(cx-6,cy-6,12,12,core);px(cx-4,cy-4,8,8,glow);
+    if(!muted||wx.cloud<0.85){
+      const rays=scene.lowSun?4:8;
+      for(let i=0;i<rays;i++){const a=i*Math.PI/(rays/2)+(scene.lowSun?Math.PI/8:0);px(cx+Math.cos(a)*r-1,cy+Math.sin(a)*r-1,2,2,ray)}
+    }
+    // Soft cloud blotches over the sun when overcast
+    if(wx.cloud>0.4){
+      ctx.globalAlpha=.35+wx.cloud*.35;
+      px(cx-10,cy-2,8,4,'#9aafb4');px(cx-4,cy-4,10,5,'#b7c6c8');px(cx+4,cy-1,7,4,'#8a9ea4');
+      ctx.globalAlpha=1;
+    }
+  }else{
+    const illum=typeof Astro!=='undefined'&&Astro.moonIllumination?Astro.moonIllumination(time()):0.7;
+    const bright=mixHex('#6a7680','#c8d6e0',0.35+illum*0.65);
+    px(cx-5,cy-6,10,12,bright);px(cx-2,cy-4,8,9,'#07151b');
+    px(cx+4,cy-8,2,2,'#e7f0ff');px(cx-7,cy+2,2,2,'#e7f0ff');
+    if(scene.dayFactor<0.15){px(cx+9,cy-5,1,1,'#e7f0ff');px(cx-10,cy+4,1,1,'#cfe0ff')}
+  }
+}
+
+function waterPalette(scene,wx){
+  // Base day vs night water (independent of AM/PM fish school).
+  // Day reads clearly brighter so solar altitude is visible in the tank body.
+  const dayTop='#12566a',dayMid='#0a3644',dayBot='#041c26';
+  const nightTop='#081828',nightMid='#05151c',nightBot='#020c12';
+  const t=scene.dayFactor;
+  let top=mixHex(nightTop,dayTop,t);
+  let mid=mixHex(nightMid,dayMid,t);
+  let bot=mixHex(nightBot,dayBot,t);
+  // Twilight amber lift near the surface
+  if(scene.twilight){
+    const tw=clamp(1-Math.abs(scene.elev)/8,0,1);
+    top=mixHex(top,'#4a3018',tw*0.6);
+    mid=mixHex(mid,'#1a1820',tw*0.35);
+  }
+  // Weather tint kept mild so a cloudy day still reads as day
+  if(wx.grey>0){
+    top=mixHex(top,'#2a3438',wx.grey*0.45);
+    mid=mixHex(mid,'#1a2226',wx.grey*0.4);
+    bot=mixHex(bot,'#0c1216',wx.grey*0.3);
+  }
+  if(wx.rain>0){
+    top=mixHex(top,'#0d2430',wx.rain*0.4);
+    mid=mixHex(mid,'#071820',wx.rain*0.45);
+    bot=mixHex(bot,'#030b10',wx.rain*0.35);
+  }
+  if(wx.dim>0){
+    top=mixHex(top,'#04080c',wx.dim*0.22);
+    mid=mixHex(mid,'#03070a',wx.dim*0.28);
+  }
+  const shaft=scene.sunUp
+    ?(wx.grey>0.5?mixHex('#9eb8ff','#8a9aaa',wx.grey):mixHex('#9eb8ff','#b8fff4',scene.dayFactor))
+    :'#6a7a9a';
+  const shaftA=.03+scene.dayFactor*.12*(1-wx.dim*.55);
+  return{top,mid,bot,shaft,shaftA};
+}
+
+function drawRain(left,right,top,bottom,wx,t){
+  if(wx.rain<.2||reduce.matches)return;
+  ctx.globalAlpha=.18+wx.rain*.25;
+  ctx.fillStyle=wx.snowing?'#d8e6ef':'#7eb8c8';
+  const n=Math.floor(10+wx.rain*18);
+  for(let i=0;i<n;i++){
+    const x=left+8+hash(i*11+3)*(right-left-16);
+    const y=top+6+((t*40*(.6+hash(i)*.8)+hash(i*5)*80)%(bottom-top-20));
+    if(wx.snowing)px(x,y,2,2,'#d8e6ef');
+    else px(x,y,1,3+hash(i*3)*3,'#7eb8c8');
+  }
+  ctx.globalAlpha=1;
+}
+
+function draw(t){
+  const d=time(),motion=reduce.matches?0:t*.001,sec=d.getSeconds()+d.getMilliseconds()/1000;
+  const {h12,pm}=hourParts(d),mins=d.getMinutes(),tens=Math.floor(mins/10),ones=mins%10,secs=d.getSeconds();
+  const hourKey=h12+(pm?'p':'a');
+  if(hourKey!==lastHourKey){lastHourKey=hourKey;initFish(h12,pm)}
+  const scene=solarScene(d),wx=weatherMods(),pal=waterPalette(scene,wx);
+
+  ctx.fillStyle='#010507';ctx.fillRect(0,0,W,H);
+  const left=10,right=W-10,top=12,bottom=234;
+  ctx.fillStyle='#07151b';ctx.fillRect(left,top,right-left,bottom-top);
+  const g=ctx.createLinearGradient(0,top,0,bottom);
+  g.addColorStop(0,pal.top);g.addColorStop(.5,pal.mid);g.addColorStop(1,pal.bot);
+  ctx.fillStyle=g;ctx.fillRect(left+4,top+5,right-left-8,bottom-top-10);
+  ctx.globalAlpha=pal.shaftA;ctx.fillStyle=pal.shaft;
+  for(let x=left+18;x<right;x+=38){ctx.beginPath();ctx.moveTo(x,top+5);ctx.lineTo(x+30,bottom-10);ctx.lineTo(x+44,bottom-10);ctx.lineTo(x+8,top+5);ctx.fill()}
+  ctx.globalAlpha=1;
+  drawRain(left,right,top,bottom,wx,motion);
+  px(left,top,right-left,4,'#42575b');px(left,bottom-4,right-left,4,'#26383c');px(left,top,4,bottom-top,'#34494d');px(right-4,top,4,bottom-top,'#34494d');px(left+4,top+4,right-left-8,2,'#8da7a4');
+
+  // Celestial badge: real sun/moon from solar elevation (not clock AM/PM). Y tracks altitude.
+  const badgeX=W/2,badgeY=Math.round(scene.skyY);
+  px(badgeX-22,badgeY-14,44,28,'#041014');px(badgeX-20,badgeY-12,40,24,'#142f33');px(badgeX-18,badgeY-10,36,20,'#07191d');
+  dayBadge(badgeX,badgeY,scene,wx);
+
+  // Gravel bed (plain) plus a countable row of gold nuggets for minute ones (0–9)
+  for(let x=left+5;x<right-5;x+=4){const h=2+(hash(x*3)|0)*2;px(x,bottom-10-h,4,h+6,hash(x)>.55?'#6e5539':hash(x)>.25?'#9a7144':'#43534a')}
+  for(let i=0;i<ones;i++){const gx=left+14+i*9,gh=4+(i%2);px(gx,bottom-12-gh,7,gh+5,'#c4922e');px(gx+1,bottom-13-gh,5,2,'#ffe28a');px(gx+2,bottom-11-gh,2,2,'#fff6c8')}
+  castle(W*.66,bottom-10);
+  // Minute tens: tall kelp clumps on the left bank (0–5). Right plant is scenery only.
+  for(let i=0;i<tens;i++)plant(left+18+i*((W*.42)/5),bottom-10,motion,2+i*3,true);
+  plant(W*.84,bottom-10,motion,8,false);
+  // Seconds: aerator bubble field — one bubble identity per elapsed second
+  const pulse=reduce.matches?1:.55+.45*Math.abs(Math.sin(sec*Math.PI));
+  for(let i=0;i<=secs;i++){const lane=i%6,x=W*.66-15+lane*6,y=bottom-45-(((sec*13+i*17)%170));bubble(x,y,1+(i%3===0),i===secs?.55+.4*pulse:.72)}
+  // Tiny aerator nozzle pulse on the castle for the current second tick
+  ctx.globalAlpha=pulse;px(W*.66-2,bottom-42,4,3,'#a7fff1');ctx.globalAlpha=1;
+  fish.forEach((f)=>{let x=f.x+(reduce.matches?0:motion*14*f.s*f.dir);const span=W+60;x=((x+30)%span+span)%span-30;const y=f.y+(reduce.matches?0:Math.sin(motion*.8+f.phase)*4);fishShape(x,y,f.dir,f.size,f.pal,motion*5+f.phase,f.kind)});
+  px(left+6,bottom-2,right-left-12,2,'#121b1c');
+
+  // Night vignette / daylight lift over the whole tank glass
+  if(scene.dayFactor<0.55||wx.dim>0.2){
+    const veil=ctx.createLinearGradient(0,top,0,bottom);
+    const nightA=(1-scene.dayFactor)*.22+wx.dim*.18;
+    veil.addColorStop(0,`rgba(2,8,16,${nightA*.7})`);
+    veil.addColorStop(1,`rgba(1,4,8,${nightA})`);
+    ctx.fillStyle=veil;ctx.fillRect(left+4,top+5,right-left-8,bottom-top-10);
+  }
+
+  if(d.getMinutes()!==lastMinute){
+    lastMinute=d.getMinutes();
+    const ampm=pm?'PM':'AM';
+    const sky=scene.sunUp?(wx.cloud>.6?'overcast day':'daylight'):(scene.twilight?'twilight':'night');
+    const wxNote=place.weather
+      ?(wx.rain>.2?(wx.snowing?' snowy':' rainy'):wx.cloud>.5?' cloudy':' clear')
+      :'';
+    sr.textContent=`The local time is ${d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}. ${h12} ${pm?'cool':'warm'} fish mark ${h12} ${ampm}; ${tens} tall kelp and ${ones} gold nuggets mark ${String(mins).padStart(2,'0')} minutes; bubbles rise with the seconds. Tank lighting is ${sky}${wxNote}.`;
+  }
+  requestAnimationFrame(draw);
+}
+addEventListener('resize',()=>{resize();lastHourKey='';const d=time(),{h12,pm}=hourParts(d);initFish(h12,pm)});
+resize();{const d=time(),{h12,pm}=hourParts(d);initFish(h12,pm)}
+loadPlace();
+if(typeof FetchCache!=='undefined')setInterval(loadPlace,WX_TTL);
+requestAnimationFrame(draw);
+})();
+</script>
+
+
+
+</body>
+</html>

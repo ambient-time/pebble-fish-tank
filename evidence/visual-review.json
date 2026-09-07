@@ -1,0 +1,22 @@
+{
+  "pbwSHA256": "6fdcfc9ed549bf426e42a541070d48de53d2309b0b3509cfaa987463934902a4",
+  "reviewedAt": "2026-09-07T04:06:36.083028+00:00",
+  "method": "Direct inspection of native-resolution PNGs",
+  "frames": [
+    "evidence/basalt-hero.png",
+    "evidence/chalk-before-noon.png",
+    "evidence/diorite-before-noon.png",
+    "evidence/emery-hero.png",
+    "evidence/flint-hero.png",
+    "evidence/gabbro-hero.png",
+    "evidence/gabbro-before-midnight.png",
+    "evidence/chalk-noon.png"
+  ],
+  "findings": [
+    "The aquarium fills the rectangular screen and remains inside a complete circular frame on round screens.",
+    "The noon school shows twelve visible fish. Fish remain distinct from the lamp and gravel.",
+    "Five kelp strands and nine bordered nuggets remain separate at 11:59, including monochrome.",
+    "Time lamp is readable without clipping on all six target layouts."
+  ],
+  "limits": "Representative native frames. Physical wrist motion, sunlight readability and battery use remain unmeasured."
+}

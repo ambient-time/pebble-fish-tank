@@ -1,0 +1,76 @@
+{
+  "platform": "emery",
+  "pbwSHA256": "6fdcfc9ed549bf426e42a541070d48de53d2309b0b3509cfaa987463934902a4",
+  "capturedAt": "2026-09-07T04:02:29.682757+00:00",
+  "secondsChanged": true,
+  "naturalNoonRollover": true,
+  "naturalMidnightRollover": true,
+  "cadenceFrames": {
+    "idle": [
+      23,
+      24,
+      25
+    ],
+    "tap": [
+      29,
+      37,
+      45
+    ],
+    "settled": [
+      78,
+      79,
+      80
+    ]
+  },
+  "frames": [
+    "evidence/emery-hero.png",
+    "evidence/emery-later.png",
+    "evidence/emery-noon.png",
+    "evidence/emery-quarter.png",
+    "evidence/emery-evening.png",
+    "evidence/emery-before-noon.png",
+    "evidence/emery-noon-rollover.png",
+    "evidence/emery-before-midnight.png",
+    "evidence/emery-midnight-rollover.png",
+    "evidence/emery-cadence.png"
+  ],
+  "logs": [
+    "Tank time=04:01:53 fish=4 kelp=0 nuggets=1 frames=1 heap=125704",
+    "Tank time=04:01:54 fish=4 kelp=0 nuggets=1 frames=3 heap=125784",
+    "Tank time=04:01:55 fish=4 kelp=0 nuggets=1 frames=4 heap=125784",
+    "Tank time=10:08:01 fish=10 kelp=0 nuggets=8 frames=5 heap=125784",
+    "Tank time=10:08:02 fish=10 kelp=0 nuggets=8 frames=6 heap=125784",
+    "Tank time=12:00:00 fish=12 kelp=0 nuggets=0 frames=7 heap=125784",
+    "Tank time=03:15:46 fish=3 kelp=1 nuggets=5 frames=8 heap=125784",
+    "Tank time=18:30:31 fish=6 kelp=3 nuggets=0 frames=9 heap=125784",
+    "Tank time=11:59:58 fish=11 kelp=5 nuggets=9 frames=10 heap=125784",
+    "Tank time=11:59:59 fish=11 kelp=5 nuggets=9 frames=11 heap=125784",
+    "Tank time=12:00:00 fish=12 kelp=0 nuggets=0 frames=12 heap=125784",
+    "Tank time=23:59:59 fish=11 kelp=5 nuggets=9 frames=13 heap=125784",
+    "Tank time=00:00:00 fish=12 kelp=0 nuggets=0 frames=14 heap=125784",
+    "Tank time=11:24:31 fish=11 kelp=2 nuggets=4 frames=15 heap=125784",
+    "Tank time=11:24:32 fish=11 kelp=2 nuggets=4 frames=16 heap=125784",
+    "Tank time=11:24:33 fish=11 kelp=2 nuggets=4 frames=17 heap=125784",
+    "Tank time=11:24:34 fish=11 kelp=2 nuggets=4 frames=18 heap=125784",
+    "Tank time=11:24:35 fish=11 kelp=2 nuggets=4 frames=19 heap=125784",
+    "Tank time=11:24:36 fish=11 kelp=2 nuggets=4 frames=20 heap=125784",
+    "Tank time=11:24:37 fish=11 kelp=2 nuggets=4 frames=21 heap=125784",
+    "Tank time=11:24:38 fish=11 kelp=2 nuggets=4 frames=22 heap=125784",
+    "Tank time=11:24:39 fish=11 kelp=2 nuggets=4 frames=23 heap=125784",
+    "Tank time=11:24:40 fish=11 kelp=2 nuggets=4 frames=24 heap=125784",
+    "Tank time=11:24:41 fish=11 kelp=2 nuggets=4 frames=25 heap=125784",
+    "Tank time=11:24:42 fish=11 kelp=2 nuggets=4 frames=29 heap=125784",
+    "Tank time=11:24:43 fish=11 kelp=2 nuggets=4 frames=37 heap=125784",
+    "Tank time=11:24:44 fish=11 kelp=2 nuggets=4 frames=45 heap=125784",
+    "Tank time=11:24:45 fish=11 kelp=2 nuggets=4 frames=53 heap=125784",
+    "Tank time=11:24:46 fish=11 kelp=2 nuggets=4 frames=60 heap=125784",
+    "Tank time=11:24:47 fish=11 kelp=2 nuggets=4 frames=68 heap=125784",
+    "Tank time=11:24:48 fish=11 kelp=2 nuggets=4 frames=75 heap=125784",
+    "Tank time=11:24:49 fish=11 kelp=2 nuggets=4 frames=76 heap=125784",
+    "Tank time=11:24:50 fish=11 kelp=2 nuggets=4 frames=77 heap=125784",
+    "Tank time=11:24:51 fish=11 kelp=2 nuggets=4 frames=78 heap=125784",
+    "Tank time=11:24:52 fish=11 kelp=2 nuggets=4 frames=79 heap=125784",
+    "Tank time=11:24:53 fish=11 kelp=2 nuggets=4 frames=80 heap=125784"
+  ],
+  "limits": "Isolated emulator. Frames require visual inspection; not physical-device power/readability evidence."
+}

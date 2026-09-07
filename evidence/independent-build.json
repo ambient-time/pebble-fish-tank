@@ -1,0 +1,17 @@
+{
+  "archiveSHA256": "547cf847683106012fc2a16037843d16473b9b219c388deeb7b37d38b6fe468c",
+  "sourceArchive": "fish-tank-0.1.0-source.zip",
+  "independentPBWSHA256": "5a30b315a3937c312cd8f923c0ab26f2812ffa274e494623eb4a8a33283b3290",
+  "targets": [
+    "basalt",
+    "chalk",
+    "diorite",
+    "emery",
+    "flint",
+    "gabbro"
+  ],
+  "hostMathTests": "passed",
+  "sdk": "4.33.1",
+  "buildOutsideSourceTree": "passed",
+  "note": "Canonical PBW remains the binary tied to native screenshots."
+}

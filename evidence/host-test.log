@@ -1,0 +1,4 @@
+mkdir -p build
+clang -std=c11 -fsanitize=address,undefined -Wall -Wextra -Werror test/math.c src/c/tank.c -lm -o build/math-test
+./build/math-test
+Fish Tank: daily encodings, rollovers, readouts and bounded fish motion pass.

@@ -1,0 +1,15 @@
+{
+  "version": "0.1.0",
+  "uuid": "084c5aae-6bab-44f8-90d4-6276dbebe487",
+  "pbwSHA256": "6fdcfc9ed549bf426e42a541070d48de53d2309b0b3509cfaa987463934902a4",
+  "targets": [
+    "basalt",
+    "chalk",
+    "diorite",
+    "emery",
+    "flint",
+    "gabbro"
+  ],
+  "nativeChecks": "Passed; see platform reports.",
+  "limits": "Emulator evidence. Physical-watch readability and battery use remain unmeasured."
+}
