@@ -1,12 +1,14 @@
 {
   "name": "fish-tank",
   "author": "Luke Steuber",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "keywords": [
     "pebble-app"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "@rebble/clay": "1.0.10"
+  },
   "pebble": {
     "displayName": "Fish Count",
     "companyName": "Luke Steuber",
@@ -24,9 +26,18 @@
     "watchapp": {
       "watchface": true
     },
-    "messageKeys": [],
+    "messageKeys": {
+      "REVISION": 0,
+      "ENABLED": 1,
+      "AT": 2,
+      "SERIES": 3,
+      "STATION": 4
+    },
     "resources": {
       "media": []
-    }
+    },
+    "capabilities": [
+      "configurable"
+    ]
   }
 }

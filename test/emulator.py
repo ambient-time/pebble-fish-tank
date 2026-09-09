@@ -23,6 +23,7 @@ import png
 from pebble_tool.commands.screenshot import ScreenshotCommand
 from pebble_tool.commands.install import ToolAppInstaller
 from libpebble2.protocol.apps import AppRunState,AppRunStateStart
+from libpebble2.services.appmessage import AppMessageService, Int32, CString
 from libpebble2.protocol.logs import AppLogMessage,AppLogShippingControl
 import pebble_tool.sdk.emulator as emulator
 from libpebble2.communication.transports.qemu.protocol import QemuButton,QemuTap
@@ -62,7 +63,7 @@ def run(platform,fresh=False,record=0):
     except BaseException:
         shutdown();bridge_log.close()
         raise
-    logs=[];frames=[]
+    logs=[];frames=[];service=None;current_config={}
     def log(packet):
         logs.append(str(packet.message));print(str(packet.message),flush=True)
     handle=watch.register_endpoint(AppLogMessage,log)
@@ -73,8 +74,11 @@ def run(platform,fresh=False,record=0):
             h,m,s=clock
             target=datetime.datetime.now().replace(hour=h,minute=m,second=s,microsecond=0)
             start=len(logs)
-            cmd._set_time(watch,target);time.sleep(.35)
             cmd._set_time(watch,target)
+            if service:service.send_message(APP,{keys[k]:Int32(v) for k,v in current_config.items()})
+            time.sleep(.35)
+            cmd._set_time(watch,target)
+            if service:service.send_message(APP,{keys[k]:Int32(v) for k,v in current_config.items()})
             expected=f'time={h:02d}:{m:02d}:'
             deadline=time.monotonic()+5
             while not any(expected in line for line in logs[start:]) and time.monotonic()<deadline:
@@ -129,6 +133,33 @@ def run(platform,fresh=False,record=0):
             if len(settled)==3 and all(1<=b-a<=2 for a,b in zip(settled,settled[1:])):break
             time.sleep(.05)
         assert len(settled)==3 and all(1<=b-a<=2 for a,b in zip(settled,settled[1:])),'Tap burst did not end'
+        service=AppMessageService(watch)
+        keys=json.loads((ROOT/'build/js/message_keys.json').read_text())
+        stamp=int(datetime.datetime.now().replace(hour=10,minute=0,second=0,microsecond=0).timestamp())
+        # AT is always an absolute UTC-hour boundary, independent of host timezone.
+        stamp=stamp//3600*3600
+        def send(payload):
+            if 'ENABLED' in payload:current_config.update(payload)
+            service.send_message(APP,{keys[k]:(CString(v) if isinstance(v,str) else Int32(v)) for k,v in payload.items()});time.sleep(.4)
+        send({'REVISION':1,'ENABLED':1})
+        send({'REVISION':1,'AT':stamp,'SERIES':'00'*48+'ff'})
+        low=grab('tide-low',(10,8,0))
+        send({'REVISION':1,'AT':stamp,'SERIES':'ff'*48+'00'})
+        high=grab('tide-high',(10,8,0))
+        assert low!=high,'Tide sample did not change native waterline'
+        start=len(logs)
+        send({'REVISION':1,'AT':stamp,'SERIES':'!'*98})
+        assert not any('Tide enabled=' in x for x in logs[start:]),'Malformed prediction was accepted'
+        grab('tide-invalid-retained',(10,8,0))
+        send({'REVISION':2,'ENABLED':1})
+        send({'REVISION':2,'AT':stamp-49*3600,'SERIES':'ff'*48+'00'})
+        grab('tide-expired',(10,8,0))
+        assert any('level=-1' in x for x in logs[-10:]),'Expired data remained fresh'
+        send({'REVISION':0,'ENABLED':0})
+        grab('tide-disabled',(10,8,0))
+        send({'REVISION':0,'ENABLED':1})
+        send({'REVISION':0,'AT':stamp,'SERIES':'ff'*48+'00'})
+        grab('tide-reset-recovered',(10,8,0))
         if record:
             grab('record-00',(11,24,30))
             start=time.monotonic()
@@ -140,6 +171,8 @@ def run(platform,fresh=False,record=0):
         assert hashlib.sha256(PBW.read_bytes()).hexdigest()==installed_sha,'PBW changed during native verification'
         report={'platform':platform,'pbwSHA256':installed_sha,
                 'capturedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                'tideLowHigh':True,'tideExpiredAndDisabled':True,'malformedTideRejected':True,'tideRevisionReset':True,
+                'tideFixture':'Synthetic predictions through production AppMessages; live NOAA parsing is tested separately.',
                 'secondsChanged':True,'naturalNoonRollover':True,'naturalMidnightRollover':True,
                 'cadenceFrames':{'idle':idle,'tap':burst,'settled':settled},'frames':frames,'logs':logs,
                 'limits':'Isolated emulator. Frames require visual inspection; not physical-device power/readability evidence.'}

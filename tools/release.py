@@ -16,7 +16,7 @@ def main():
     out=ROOT/'release';out.mkdir(exist_ok=True)
     artifact=out/f'{slug}-{version}.pbw';shutil.copy2(ROOT/'build'/f'{ROOT.name}.pbw',artifact)
     archive=out/f'{slug}-{version}-source.zip'
-    files=[ROOT/name for name in ['package.json','wscript','Makefile','README.md','LICENSE','.gitignore','.gitattributes']]
+    files=[ROOT/name for name in ['package.json','package-lock.json','wscript','Makefile','README.md','LICENSE','.gitignore','.gitattributes']]
     for directory in ['src','resources','reference','test','tools','evidence']:
         files.extend(p for p in (ROOT/directory).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.name not in ['independent-build.json','independent-build.log'])
     with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
@@ -26,6 +26,7 @@ def main():
         target=Path(temp)/slug;target.mkdir()
         with zipfile.ZipFile(archive) as z:z.extractall(target)
         with (ROOT/'evidence/independent-build.log').open('w') as log:
+            subprocess.run(['npm','ci','--ignore-scripts'],cwd=target,stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['make','test'],cwd=target,stdout=log,stderr=subprocess.STDOUT,check=True)
             cli=shutil.which('pebble') or str(Path.home()/'.local/bin/pebble')
             subprocess.run([cli,'build','--sdk','4.33.1'],cwd=target,stdout=log,stderr=subprocess.STDOUT,check=True)

@@ -18,7 +18,8 @@ def main():
         assert info['versionLabel']==source['version']
         assert info['watchapp']['watchface'] is True
         assert info['companyName']=='Luke Steuber'
-        assert not info['capabilities'] and not info['appKeys']
+        assert info['capabilities']==['configurable'] and info['appKeys']
+        assert 'pebble-js-app.js' in z.namelist()
         assert set(info['targetPlatforms'])==TARGETS
         for platform in sorted(TARGETS):
             manifest=json.loads(z.read(platform+'/manifest.json'))
@@ -28,6 +29,7 @@ def main():
             report=json.loads((ROOT/f'build/evidence/{platform}-report.json').read_text())
             assert report['pbwSHA256']==digest,f'{platform}: stale evidence'
             assert report['naturalNoonRollover'] and report['naturalMidnightRollover']
+            assert report['tideLowHigh'] and report['tideExpiredAndDisabled'] and report['malformedTideRejected'] and report['tideRevisionReset']
             if ROOT.name=='ishihara':
                 assert report['minuteRegenerated'] and report['minuteIdleStable'] and report['handsToggleAndPersist']
             else:

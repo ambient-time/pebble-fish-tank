@@ -1,0 +1,9 @@
+{
+  "station": "9414290",
+  "sourceURL": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=AmbientTimeFishCount&station=9414290&begin_date=20260909%2014%3A00&range=48&datum=MLLW&units=metric&time_zone=gmt&interval=h&format=json",
+  "source": "NOAA CO-OPS hourly tide predictions, meters relative to MLLW, UTC",
+  "responseSHA256": "1bd19cf5c38e5911839ccf9c588c97645ac39c1f8f65d5853ad5ffc13afb44ae",
+  "productionParserAccepted": true,
+  "coverageHours": 48,
+  "notes": "Public live response captured September 9, 2026. Native low/high comparisons use controlled fixtures, not this response."
+}

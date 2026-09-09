@@ -1,0 +1,30 @@
+[
+  {
+    "type": "heading",
+    "defaultValue": "Fish Count \u2014 tides"
+  },
+  {
+    "type": "text",
+    "defaultValue": "Optional NOAA predicted tides move the waterline. Choose a US coastal harmonic station. No automatic location."
+  },
+  {
+    "type": "toggle",
+    "messageKey": "ENABLED",
+    "label": "Enable tide waterline",
+    "defaultValue": false
+  },
+  {
+    "type": "input",
+    "messageKey": "STATION",
+    "label": "NOAA station number (7 digits)",
+    "defaultValue": ""
+  },
+  {
+    "type": "text",
+    "defaultValue": "Examples: 9414290 San Francisco, 9439040 Astoria, 8518750 The Battery. Your station number is sent to NOAA. Water height follows the low-to-high range of the cached 48-hour forecast, not a depth in meters. No surface line means tides are off, unavailable or expired. Settings and predictions are saved on the phone/watch."
+  },
+  {
+    "type": "submit",
+    "defaultValue": "Save"
+  }
+]

@@ -7,8 +7,9 @@ build: test
 	$(PEBBLE) build --sdk 4.33.1
 test:
 	mkdir -p build
-	$(HOST_CC) -std=c11 -fsanitize=address,undefined -Wall -Wextra -Werror test/math.c src/c/tank.c -lm -o build/math-test
+	$(HOST_CC) -std=c11 -fsanitize=address,undefined -Wall -Wextra -Werror test/math.c src/c/tank.c src/c/tide.c -lm -o build/math-test
 	./build/math-test
+	node --test test/tide.test.cjs
 
 package:
 	$(PYTHON) tools/release.py

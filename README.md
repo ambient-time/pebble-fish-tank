@@ -1,6 +1,6 @@
 # Fish Count
 
-![Fish Count on a color Pebble](evidence/basalt-hero.png)
+![Fish Count at high tide on a color Pebble](evidence/basalt-tide-high.png)
 
 A little aquarium on your wrist. Fish cruise through open water above a stone
 castle, moving kelp, and a gravel bed. The tank fills a rectangular screen;
@@ -13,7 +13,19 @@ seconds.
 
 Tap the watch for six seconds of smoother motion at eight frames per second.
 The tank normally updates once per second and pauses animation when another
-screen covers it. It runs offline without phone permissions or configuration.
+screen covers it. The original clock runs offline. In settings, optionally enable NOAA tides and
+enter a seven-digit US coastal harmonic station number. The waterline then
+follows hourly tide predictions, interpolating between samples. The lowest
+and highest values in the fetched 48-hour forecast map to the tank's low and
+high waterlines; this is a relative tide display, not a water-depth gauge.
+Fish stay below the surface as the tank rises and falls.
+
+Only the selected station number goes to NOAA; there is no automatic location.
+Predictions refresh every six hours while the phone companion is available.
+The watch caches the forecast through its 48-hour coverage. When disabled,
+unavailable, or expired, the surface line disappears and the offline aquarium
+continues. A station without hourly harmonic predictions does not produce a
+substitute tide. Source: [NOAA CO-OPS API](https://api.tidesandcurrents.noaa.gov/api/prod/).
 
 ## Watches and build
 
@@ -24,6 +36,7 @@ outlined stonework, and a dark tank.
 Install Pebble SDK 4.33.1, then run:
 
 ```sh
+npm install
 make test
 pebble build --sdk 4.33.1
 pebble install --emulator basalt build/fish-tank.pbw
@@ -52,5 +65,5 @@ its checksum remain in `reference/`.
 The native composition retains the local fish, kelp, nugget, and bubble time
 mappings. It keeps every fish within the tank and adjusts the composition
 for each screen shape. The water's daylight tint
-uses fixed local hours, 07:00 through 18:59. This offline edition does not fetch
+uses fixed local hours, 07:00 through 18:59. The aquarium does not fetch
 weather or calculate the source's location-based solar lighting.

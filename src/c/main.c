@@ -1,6 +1,9 @@
 // Copyright 2026 Luke Steuber. MIT License.
 #include <pebble.h>
 #include "tank.h"
+#include "tide.h"
+#include <string.h>
+static Tide s_tide;
 static Window *s_window;static Layer *s_layer;
 static AppTimer *s_timer;static bool s_focused;static int s_burst;
 static int s_w,s_h,s_lw,s_lh,s_last_second=-1;static uint32_t s_frames;
@@ -52,6 +55,7 @@ static void draw(Layer *layer,GContext *ctx){
   TankTime parts=tank_time(t.tm_hour,t.tm_min,t.tm_sec);
   uint32_t phase=(uint32_t)(epoch%86400)*8+(s_burst?ms/125:0);
   int w=s_lw,h=s_lh,bed=h-(ROUND?29:17);
+  int level=tide_level(&s_tide,(int64_t)epoch),surface=tide_surface(level,ROUND);
   graphics_context_set_antialiased(ctx,false);box(ctx,0,0,w,h,GColorBlack);
 #ifdef PBL_COLOR
   box(ctx,0,0,w,h,parts.daylight?C(0x005555):C(0x000055));
@@ -60,8 +64,10 @@ static void draw(Layer *layer,GContext *ctx){
 #else
   for(int i=0;i<36;i++){uint32_t z=tank_hash(i+87);box(ctx,10+z%(w-20),30+(z>>8)%90,1,1,GColorWhite);}
 #endif
-  for(int x=10;x<w-10;x+=9)box(ctx,x,ROUND?31:24,6,1,C(0x55aaaa));
-  for(int x=17;x<w-10;x+=17)box(ctx,x,ROUND?34:27,8,1,C(0x00aaaa));
+  // Dry glass is empty; only a valid forecast draws a measurable surface.
+  box(ctx,5,8,w-10,surface-8,GColorBlack);
+  if(level>=0){stroke(ctx,9,surface,w-10,surface,C(0xaaffff));
+    for(int x=12;x<w-12;x+=13)box(ctx,x,surface+2,7,1,C(0x55aaaa));}
   int castle=ROUND?w*65/100:w*72/100;
 #ifdef PBL_COLOR
   GColor rock=C(0x555555),edge=C(0xaaaaaa);
@@ -78,11 +84,15 @@ static void draw(Layer *layer,GContext *ctx){
   kelp(ctx,ROUND?w-39:w-19,bed,19,phase,8);kelp(ctx,ROUND?w-32:w-12,bed,14,phase,12);
   for(int i=0;i<parts.bubbles;i++){
     int x=castle-13+(i%6)*5+(int)((phase/8+i)%3)-1;
-    int y=bed-40-((phase/3+i*17)%(ROUND?69:77));if(y<38)continue;
+    int y=bed-40-((phase/3+i*17)%(ROUND?69:77));if(y<surface+5)continue;
     graphics_context_set_stroke_color(ctx,C(0x55aaaa));graphics_draw_rect(ctx,GRect(X(x),Y(y),X(2+(i%3==0)),Y(2+(i%3==0))));
     if(i%3==0)box(ctx,x,y,1,1,C(0xaaffff));
   }
-  for(int i=0;i<parts.hour;i++)sprite(ctx,tank_fish(i,parts.hour,w,h,ROUND,phase),parts.pm,phase);
+  for(int i=0;i<parts.hour;i++){
+    TankFish fish=tank_fish(i,parts.hour,w,h,ROUND,phase);
+    if(level>=0)fish.y=surface+10+(fish.y-(ROUND?45:40))*(bed-16-surface-10)/70;
+    sprite(ctx,fish,parts.pm,phase);
+  }
 #ifdef PBL_COLOR
   box(ctx,4,bed+2,w-8,h-bed-2,C(0x555500));
   for(int i=0;i<95;i++){
@@ -110,14 +120,23 @@ static void draw(Layer *layer,GContext *ctx){
   if(s_last_second!=t.tm_sec){APP_LOG(APP_LOG_LEVEL_INFO,"Tank time=%02d:%02d:%02d fish=%d kelp=%d nuggets=%d frames=%lu heap=%lu",t.tm_hour,t.tm_min,t.tm_sec,parts.hour,parts.tens,parts.ones,(unsigned long)s_frames,(unsigned long)heap_bytes_free());s_last_second=t.tm_sec;}
   (void)layer;
 }
+static bool integer(DictionaryIterator*d,int key,int32_t*out){Tuple*t=dict_find(d,key);if(!t||(t->type!=TUPLE_INT&&t->type!=TUPLE_UINT)||t->length!=4)return false;*out=t->value->int32;return true;}
+static void inbox(DictionaryIterator*d,void*context){(void)context;Tide next=s_tide;int32_t rev;if(!integer(d,MESSAGE_KEY_REVISION,&rev)||rev<0)return;
+ if(dict_find(d,MESSAGE_KEY_ENABLED)){if(dict_find(d,MESSAGE_KEY_AT)||dict_find(d,MESSAGE_KEY_SERIES))return;if(rev!=next.revision)memset(&next,0,sizeof(next));next.revision=rev;if(!integer(d,MESSAGE_KEY_ENABLED,&next.enabled))return;if(!next.enabled){next.at=0;memset(next.series,0,sizeof(next.series));}}
+ else{if(rev!=next.revision||!next.enabled||!integer(d,MESSAGE_KEY_AT,&next.at)||next.at<s_tide.at)return;Tuple*t=dict_find(d,MESSAGE_KEY_SERIES);if(!t||t->type!=TUPLE_CSTRING||t->length!=99)return;memcpy(next.series,t->value->cstring,99);if(next.series[98])return;}
+ if(!tide_valid(&next))return;
+ s_tide=next;persist_write_data(71,&s_tide,sizeof(s_tide));if(s_layer)layer_mark_dirty(s_layer);
+ APP_LOG(APP_LOG_LEVEL_INFO,"Tide enabled=%ld level=%d",(long)s_tide.enabled,tide_level(&s_tide,time(NULL)));
+}
+static void request_tide(void){DictionaryIterator*d;if(app_message_outbox_begin(&d)==APP_MSG_OK){dict_write_int32(d,MESSAGE_KEY_REVISION,s_tide.revision);app_message_outbox_send();}}
 static void cancel(void){if(s_timer){app_timer_cancel(s_timer);s_timer=NULL;}}
 static void animate(void *context){s_timer=NULL;if(!s_focused||!s_burst)return;s_burst--;layer_mark_dirty(s_layer);if(s_burst)s_timer=app_timer_register(125,animate,NULL);(void)context;}
 static void tap(AccelAxisType axis,int32_t direction){cancel();if(s_focused){s_burst=48;layer_mark_dirty(s_layer);s_timer=app_timer_register(125,animate,NULL);} (void)axis;(void)direction;}
-static void tick(struct tm *t,TimeUnits units){if(s_focused&&!s_burst)layer_mark_dirty(s_layer);(void)t;(void)units;}
+static void tick(struct tm *t,TimeUnits units){if(s_focused&&!s_burst)layer_mark_dirty(s_layer);if(t->tm_min%30==0&&t->tm_sec==0)request_tide();(void)units;}
 static void focus(bool focused){s_focused=focused;if(focused)layer_mark_dirty(s_layer);else{cancel();s_burst=0;}}
 static void load(Window *window){GRect b=layer_get_bounds(window_get_root_layer(window));s_w=b.size.w;s_h=b.size.h;s_lw=ROUND?180:144;s_lh=ROUND?180:168;
   s_layer=layer_create(b);layer_set_update_proc(s_layer,draw);layer_add_child(window_get_root_layer(window),s_layer);}
 static void unload(Window *w){cancel();layer_destroy(s_layer);(void)w;}
-static void init(void){s_window=window_create();window_set_window_handlers(s_window,(WindowHandlers){.load=load,.unload=unload});window_stack_push(s_window,false);tick_timer_service_subscribe(SECOND_UNIT,tick);accel_tap_service_subscribe(tap);app_focus_service_subscribe(focus);focus(true);}
-static void deinit(void){s_focused=false;cancel();tick_timer_service_unsubscribe();accel_tap_service_unsubscribe();app_focus_service_unsubscribe();window_destroy(s_window);}
+static void init(void){Tide saved;if(persist_get_size(71)==sizeof(saved)&&persist_read_data(71,&saved,sizeof(saved))==sizeof(saved)&&tide_valid(&saved))s_tide=saved;app_message_register_inbox_received(inbox);app_message_open(256,64);s_window=window_create();window_set_window_handlers(s_window,(WindowHandlers){.load=load,.unload=unload});window_stack_push(s_window,false);tick_timer_service_subscribe(SECOND_UNIT,tick);accel_tap_service_subscribe(tap);app_focus_service_subscribe(focus);focus(true);}
+static void deinit(void){app_message_deregister_callbacks();s_focused=false;cancel();tick_timer_service_unsubscribe();accel_tap_service_unsubscribe();app_focus_service_unsubscribe();window_destroy(s_window);}
 int main(void){init();app_event_loop();deinit();}

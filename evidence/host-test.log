@@ -1,4 +1,18 @@
 mkdir -p build
-clang -std=c11 -fsanitize=address,undefined -Wall -Wextra -Werror test/math.c src/c/tank.c -lm -o build/math-test
+clang -std=c11 -fsanitize=address,undefined -Wall -Wextra -Werror test/math.c src/c/tank.c src/c/tide.c -lm -o build/math-test
 ./build/math-test
 Fish Tank: daily encodings, rollovers and bounded fish motion pass.
+node --test test/tide.test.cjs
+✔ hourly NOAA prediction maps extrema and preserves full coverage (1.842333ms)
+✔ malformed, missing, gapped, expired and flat predictions rejected (0.7305ms)
+✔ explicit station and enabled switch required (0.313125ms)
+✔ off does no network and invalidates pending request (0.434875ms)
+✔ captured NOAA response passes production parser (0.484084ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 49.111792
