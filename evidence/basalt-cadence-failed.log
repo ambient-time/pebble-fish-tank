@@ -28,10 +28,10 @@ Tank time=11:24:41 fish=11 kelp=2 nuggets=4 frames=29 heap=60668
 Tank time=11:24:42 fish=11 kelp=2 nuggets=4 frames=37 heap=60668
 Tank time=11:24:43 fish=11 kelp=2 nuggets=4 frames=45 heap=60668
 Traceback (most recent call last):
-  File "/Users/luke/workspace/ambient-time-watch-arc-capsule/appstores/pebble/fish-tank/test/emulator.py", line 155, in <module>
+  File "~/workspace/ambient-time-watch-arc-capsule/appstores/pebble/fish-tank/test/emulator.py", line 155, in <module>
     run(args.platform,args.fresh,args.record)
     ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/luke/workspace/ambient-time-watch-arc-capsule/appstores/pebble/fish-tank/test/emulator.py", line 127, in run
+  File "~/workspace/ambient-time-watch-arc-capsule/appstores/pebble/fish-tank/test/emulator.py", line 127, in run
     assert len(settled)==3 and all(1<=b-a<=2 for a,b in zip(settled,settled[1:])),'Tap burst did not end'
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 AssertionError: Tap burst did not end

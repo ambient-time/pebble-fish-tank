@@ -6,32 +6,32 @@ found 0 vulnerabilities
 up to date, audited 2 packages in 457ms
 
 found 0 vulnerabilities
-Setting top to                           : /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank 
-Setting out to                           : /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build 
-Checking for program 'webpack'           : /Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/node_modules/.bin/webpack 
-Found Pebble SDK for gabbro in:          : /Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/gabbro 
+Setting top to                           : ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank 
+Setting out to                           : ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build 
+Checking for program 'webpack'           : ~/Library/Application Support/Pebble SDK/SDKs/4.33.1/node_modules/.bin/webpack 
+Found Pebble SDK for gabbro in:          : ~/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/gabbro 
 Checking for program 'gcc, cc'           : arm-none-eabi-gcc 
 Checking for program 'ar'                : arm-none-eabi-ar 
-Found Pebble SDK for flint in:           : /Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/flint 
+Found Pebble SDK for flint in:           : ~/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/flint 
 Checking for program 'gcc, cc'           : arm-none-eabi-gcc 
 Checking for program 'ar'                : arm-none-eabi-ar 
-Found Pebble SDK for emery in:           : /Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/emery 
+Found Pebble SDK for emery in:           : ~/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/emery 
 Checking for program 'gcc, cc'           : arm-none-eabi-gcc 
 Checking for program 'ar'                : arm-none-eabi-ar 
-Found Pebble SDK for diorite in:         : /Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/diorite 
+Found Pebble SDK for diorite in:         : ~/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/diorite 
 Checking for program 'gcc, cc'           : arm-none-eabi-gcc 
 Checking for program 'ar'                : arm-none-eabi-ar 
-Found Pebble SDK for chalk in:           : /Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/chalk 
+Found Pebble SDK for chalk in:           : ~/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/chalk 
 Checking for program 'gcc, cc'           : arm-none-eabi-gcc 
 Checking for program 'ar'                : arm-none-eabi-ar 
-Found Pebble SDK for basalt in:          : /Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/basalt 
+Found Pebble SDK for basalt in:          : ~/Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/basalt 
 Checking for program 'gcc, cc'           : arm-none-eabi-gcc 
 Checking for program 'ar'                : arm-none-eabi-ar 
 'configure' finished successfully (0.146s)
-Waf: Entering directory `/Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build'
+Waf: Entering directory `~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build'
 [15/18] Compiling gabbro | c: src/c/main.c -> build/src/c/main.c.44.o
 [17/18] Linking gabbro | cprogram: build/src/c/main.c.44.o build/src/c/tank.c.44.o build/src/c/tide.c.44.o build/gabbro/appinfo.auto.c.44.o build/gabbro/src/resource_ids.auto.c.44.o build/src/message_keys.auto.c.44.o -> build/gabbro/pebble-app.elf
-/Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/gabbro/pebble-app.elf has a LOAD segment with RWX permissions
+~/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/gabbro/pebble-app.elf has a LOAD segment with RWX permissions
 
 [18/18] Processing gabbro | memory_usage_report: build/gabbro/pebble-app.elf build/gabbro/app_resources.pbpack
 -------------------------------------------------------
@@ -41,7 +41,7 @@ Total footprint in RAM:         5845 bytes / 128.0KB
 Free RAM available (heap):      125227 bytes
 ------------------------------------------------------- 
 [19/33] Creating flint | resource_ball:  -> build/flint/system_resources.resball
-[20/33] Creating flint | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/flint/appinfo.auto.c:  -> build/flint/appinfo.auto.c
+[20/33] Creating flint | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/flint/appinfo.auto.c:  -> build/flint/appinfo.auto.c
 [21/33] Compiling flint | subst: ../../../../../Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/common/pebble_app.ld.template -> build/flint/pebble_app.ld.auto
 [22/33] Compiling flint | c: src/c/tide.c -> build/src/c/tide.c.45.o
 [23/33] Compiling flint | c: src/c/tank.c -> build/src/c/tank.c.45.o
@@ -53,7 +53,7 @@ Free RAM available (heap):      125227 bytes
 [30/33] Compiling flint | c: src/c/main.c -> build/src/c/main.c.45.o
 [31/33] Compiling flint | c: build/flint/src/resource_ids.auto.c -> build/flint/src/resource_ids.auto.c.45.o
 [32/33] Linking flint | cprogram: build/src/c/main.c.45.o build/src/c/tank.c.45.o build/src/c/tide.c.45.o build/flint/appinfo.auto.c.45.o build/flint/src/resource_ids.auto.c.45.o build/src/message_keys.auto.c.45.o -> build/flint/pebble-app.elf
-/Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/flint/pebble-app.elf has a LOAD segment with RWX permissions
+~/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/flint/pebble-app.elf has a LOAD segment with RWX permissions
 
 [33/33] Processing flint | memory_usage_report: build/flint/pebble-app.elf build/flint/app_resources.pbpack
 -------------------------------------------------------
@@ -63,7 +63,7 @@ Total footprint in RAM:         5483 bytes / 64.0KB
 Free RAM available (heap):      60053 bytes
 ------------------------------------------------------- 
 [34/48] Creating emery | resource_ball:  -> build/emery/system_resources.resball
-[35/48] Creating emery | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/emery/appinfo.auto.c:  -> build/emery/appinfo.auto.c
+[35/48] Creating emery | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/emery/appinfo.auto.c:  -> build/emery/appinfo.auto.c
 [36/48] Compiling emery | subst: ../../../../../Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/common/pebble_app.ld.template -> build/emery/pebble_app.ld.auto
 [37/48] Compiling emery | c: src/c/tide.c -> build/src/c/tide.c.46.o
 [38/48] Compiling emery | c: src/c/tank.c -> build/src/c/tank.c.46.o
@@ -75,7 +75,7 @@ Free RAM available (heap):      60053 bytes
 [45/48] Compiling emery | c: src/c/main.c -> build/src/c/main.c.46.o
 [46/48] Compiling emery | c: build/emery/appinfo.auto.c -> build/emery/appinfo.auto.c.46.o
 [47/48] Linking emery | cprogram: build/src/c/main.c.46.o build/src/c/tank.c.46.o build/src/c/tide.c.46.o build/emery/appinfo.auto.c.46.o build/emery/src/resource_ids.auto.c.46.o build/src/message_keys.auto.c.46.o -> build/emery/pebble-app.elf
-/Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/emery/pebble-app.elf has a LOAD segment with RWX permissions
+~/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/emery/pebble-app.elf has a LOAD segment with RWX permissions
 
 [48/48] Processing emery | memory_usage_report: build/emery/pebble-app.elf build/emery/app_resources.pbpack
 -------------------------------------------------------
@@ -85,7 +85,7 @@ Total footprint in RAM:         5929 bytes / 128.0KB
 Free RAM available (heap):      125143 bytes
 ------------------------------------------------------- 
 [49/63] Creating diorite | resource_ball:  -> build/diorite/system_resources.resball
-[50/63] Creating diorite | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/diorite/appinfo.auto.c:  -> build/diorite/appinfo.auto.c
+[50/63] Creating diorite | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/diorite/appinfo.auto.c:  -> build/diorite/appinfo.auto.c
 [51/63] Compiling diorite | subst: ../../../../../Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/common/pebble_app.ld.template -> build/diorite/pebble_app.ld.auto
 [52/63] Compiling diorite | c: src/c/tide.c -> build/src/c/tide.c.47.o
 [53/63] Compiling diorite | c: src/c/tank.c -> build/src/c/tank.c.47.o
@@ -97,7 +97,7 @@ Free RAM available (heap):      125143 bytes
 [60/63] Compiling diorite | c: build/diorite/appinfo.auto.c -> build/diorite/appinfo.auto.c.47.o
 [61/63] Compiling diorite | c: build/diorite/src/resource_ids.auto.c -> build/diorite/src/resource_ids.auto.c.47.o
 [62/63] Linking diorite | cprogram: build/src/c/main.c.47.o build/src/c/tank.c.47.o build/src/c/tide.c.47.o build/diorite/appinfo.auto.c.47.o build/diorite/src/resource_ids.auto.c.47.o build/src/message_keys.auto.c.47.o -> build/diorite/pebble-app.elf
-/Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/diorite/pebble-app.elf has a LOAD segment with RWX permissions
+~/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/diorite/pebble-app.elf has a LOAD segment with RWX permissions
 
 [63/63] Processing diorite | memory_usage_report: build/diorite/pebble-app.elf build/diorite/app_resources.pbpack
 -------------------------------------------------------
@@ -107,7 +107,7 @@ Total footprint in RAM:         5483 bytes / 64.0KB
 Free RAM available (heap):      60053 bytes
 ------------------------------------------------------- 
 [64/78] Creating chalk | resource_ball:  -> build/chalk/system_resources.resball
-[65/78] Creating chalk | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/chalk/appinfo.auto.c:  -> build/chalk/appinfo.auto.c
+[65/78] Creating chalk | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/chalk/appinfo.auto.c:  -> build/chalk/appinfo.auto.c
 [66/78] Compiling chalk | subst: ../../../../../Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/common/pebble_app.ld.template -> build/chalk/pebble_app.ld.auto
 [67/78] Compiling chalk | c: src/c/tide.c -> build/src/c/tide.c.48.o
 [68/78] Compiling chalk | c: src/c/tank.c -> build/src/c/tank.c.48.o
@@ -119,7 +119,7 @@ Free RAM available (heap):      60053 bytes
 [75/78] Compiling chalk | c: src/c/main.c -> build/src/c/main.c.48.o
 [76/78] Compiling chalk | c: build/chalk/appinfo.auto.c -> build/chalk/appinfo.auto.c.48.o
 [77/78] Linking chalk | cprogram: build/src/c/main.c.48.o build/src/c/tank.c.48.o build/src/c/tide.c.48.o build/chalk/appinfo.auto.c.48.o build/chalk/src/resource_ids.auto.c.48.o build/src/message_keys.auto.c.48.o -> build/chalk/pebble-app.elf
-/Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/chalk/pebble-app.elf has a LOAD segment with RWX permissions
+~/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/chalk/pebble-app.elf has a LOAD segment with RWX permissions
 
 [78/78] Processing chalk | memory_usage_report: build/chalk/pebble-app.elf build/chalk/app_resources.pbpack
 -------------------------------------------------------
@@ -129,7 +129,7 @@ Total footprint in RAM:         5845 bytes / 64.0KB
 Free RAM available (heap):      59691 bytes
 ------------------------------------------------------- 
 [79/93] Creating basalt | resource_ball:  -> build/basalt/system_resources.resball
-[80/93] Creating basalt | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/basalt/appinfo.auto.c:  -> build/basalt/appinfo.auto.c
+[80/93] Creating basalt | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/basalt/appinfo.auto.c:  -> build/basalt/appinfo.auto.c
 [81/93] Compiling basalt | subst: ../../../../../Library/Application Support/Pebble SDK/SDKs/4.33.1/sdk-core/pebble/common/pebble_app.ld.template -> build/basalt/pebble_app.ld.auto
 [83/93] Compiling basalt | c: src/c/tank.c -> build/src/c/tank.c.49.o
 [84/93] Compiling basalt | c: src/c/tide.c -> build/src/c/tide.c.49.o
@@ -141,7 +141,7 @@ Free RAM available (heap):      59691 bytes
 [90/93] Compiling basalt | c: build/basalt/appinfo.auto.c -> build/basalt/appinfo.auto.c.49.o
 [91/93] Compiling basalt | c: build/basalt/src/resource_ids.auto.c -> build/basalt/src/resource_ids.auto.c.49.o
 [92/93] Linking basalt | cprogram: build/src/c/main.c.49.o build/src/c/tank.c.49.o build/src/c/tide.c.49.o build/basalt/appinfo.auto.c.49.o build/basalt/src/resource_ids.auto.c.49.o build/src/message_keys.auto.c.49.o -> build/basalt/pebble-app.elf
-/Users/luke/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/basalt/pebble-app.elf has a LOAD segment with RWX permissions
+~/Library/Application Support/Pebble SDK/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/bin/ld: warning: ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/basalt/pebble-app.elf has a LOAD segment with RWX permissions
 
 [93/93] Processing basalt | memory_usage_report: build/basalt/pebble-app.elf build/basalt/app_resources.pbpack
 -------------------------------------------------------
@@ -150,12 +150,12 @@ Total size of resources:        4092 bytes / 256.0KB
 Total footprint in RAM:         5929 bytes / 64.0KB
 Free RAM available (heap):      59607 bytes
 ------------------------------------------------------- 
-[ 94/107] Compiling gabbro | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/gabbro/pebble-app.raw.bin: build/gabbro/pebble-app.elf -> build/gabbro/pebble-app.raw.bin
-[ 95/107] Compiling flint | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/flint/pebble-app.raw.bin: build/flint/pebble-app.elf -> build/flint/pebble-app.raw.bin
-[ 96/107] Compiling emery | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/emery/pebble-app.raw.bin: build/emery/pebble-app.elf -> build/emery/pebble-app.raw.bin
-[ 97/107] Compiling diorite | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/diorite/pebble-app.raw.bin: build/diorite/pebble-app.elf -> build/diorite/pebble-app.raw.bin
-[ 98/107] Compiling chalk | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/chalk/pebble-app.raw.bin: build/chalk/pebble-app.elf -> build/chalk/pebble-app.raw.bin
-[ 99/107] Compiling basalt | /Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/basalt/pebble-app.raw.bin: build/basalt/pebble-app.elf -> build/basalt/pebble-app.raw.bin
+[ 94/107] Compiling gabbro | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/gabbro/pebble-app.raw.bin: build/gabbro/pebble-app.elf -> build/gabbro/pebble-app.raw.bin
+[ 95/107] Compiling flint | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/flint/pebble-app.raw.bin: build/flint/pebble-app.elf -> build/flint/pebble-app.raw.bin
+[ 96/107] Compiling emery | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/emery/pebble-app.raw.bin: build/emery/pebble-app.elf -> build/emery/pebble-app.raw.bin
+[ 97/107] Compiling diorite | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/diorite/pebble-app.raw.bin: build/diorite/pebble-app.elf -> build/diorite/pebble-app.raw.bin
+[ 98/107] Compiling chalk | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/chalk/pebble-app.raw.bin: build/chalk/pebble-app.elf -> build/chalk/pebble-app.raw.bin
+[ 99/107] Compiling basalt | ~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build/basalt/pebble-app.raw.bin: build/basalt/pebble-app.elf -> build/basalt/pebble-app.raw.bin
 [100/107] Processing merge_js: src/pkjs/config.json src/pkjs/feed.js src/pkjs/index.js -> build/pebble-js-app.js build/pebble-js-app.js.map
 [101/107] Processing gabbro | inject-metadata: build/gabbro/pebble-app.raw.bin build/gabbro/pebble-app.elf build/gabbro/app_resources.pbpack -> build/gabbro/pebble-app.bin
 [102/107] Processing basalt | inject-metadata: build/basalt/pebble-app.raw.bin build/basalt/pebble-app.elf build/basalt/app_resources.pbpack -> build/basalt/pebble-app.bin
@@ -164,7 +164,7 @@ Free RAM available (heap):      59607 bytes
 [105/107] Processing chalk | inject-metadata: build/chalk/pebble-app.raw.bin build/chalk/pebble-app.elf build/chalk/app_resources.pbpack -> build/chalk/pebble-app.bin
 [106/107] Processing flint | inject-metadata: build/flint/pebble-app.raw.bin build/flint/pebble-app.elf build/flint/app_resources.pbpack -> build/flint/pebble-app.bin
 [107/107] Creating app_bundle:  -> build/fish-tank.pbw
-Waf: Leaving directory `/Users/luke/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build'
+Waf: Leaving directory `~/workspace/ambient-time-pebble-data-nine/appstores/pebble/fish-tank/build'
 'build' finished successfully (1.059s)
 
 [1m[33mA new pebble-tool is available: v5.0.40 (current: v5.0.39)[0m

@@ -367,13 +367,13 @@ DEBUG:pypkjs:received: None
 DEBUG:geventwebsocket.handler:Failed to write closing frame -> closing socket
 DEBUG:geventwebsocket.handler:Closed WebSocket
 Traceback (most recent call last):
-  File "/Users/luke/.local/share/uv/tools/pebble-tool/lib/python3.14/site-packages/gevent/pywsgi.py", line 1111, in handle_one_response
+  File "~/.local/share/uv/tools/pebble-tool/lib/python3.14/site-packages/gevent/pywsgi.py", line 1111, in handle_one_response
     self.run_application()
     ~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/luke/.local/share/uv/tools/pebble-tool/lib/python3.14/site-packages/geventwebsocket/handler.py", line 75, in run_application
+  File "~/.local/share/uv/tools/pebble-tool/lib/python3.14/site-packages/geventwebsocket/handler.py", line 75, in run_application
     self.run_websocket()
     ~~~~~~~~~~~~~~~~~~^^
-  File "/Users/luke/.local/share/uv/tools/pebble-tool/lib/python3.14/site-packages/geventwebsocket/handler.py", line 52, in run_websocket
+  File "~/.local/share/uv/tools/pebble-tool/lib/python3.14/site-packages/geventwebsocket/handler.py", line 52, in run_websocket
     list(self.application(self.environ, lambda s, h, e=None: []))
     ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 TypeError: 'NoneType' object is not iterable
